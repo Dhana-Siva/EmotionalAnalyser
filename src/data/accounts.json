@@ -1,0 +1,77 @@
+[
+  {
+    "id": "chk-001",
+    "type": "Checking",
+    "name": "Primary Checking",
+    "balance": 12458.32,
+    "accountNumber": "****4821",
+    "routingNumber": "****0092",
+    "availableBalance": 12358.32,
+    "currency": "USD",
+    "balanceHistory": [
+      { "month": "Mar '25", "balance": 10200 },
+      { "month": "Apr '25", "balance": 9750 },
+      { "month": "May '25", "balance": 11400 },
+      { "month": "Jun '25", "balance": 10850 },
+      { "month": "Jul '25", "balance": 13200 },
+      { "month": "Aug '25", "balance": 11600 },
+      { "month": "Sep '25", "balance": 12100 },
+      { "month": "Oct '25", "balance": 11350 },
+      { "month": "Nov '25", "balance": 10700 },
+      { "month": "Dec '25", "balance": 9500 },
+      { "month": "Jan '26", "balance": 11100 },
+      { "month": "Feb '26", "balance": 12458 }
+    ]
+  },
+  {
+    "id": "sav-001",
+    "type": "Savings",
+    "name": "High-Yield Savings",
+    "balance": 45230.15,
+    "accountNumber": "****7633",
+    "routingNumber": "****0092",
+    "interestRate": 4.25,
+    "availableBalance": 45230.15,
+    "currency": "USD",
+    "balanceHistory": [
+      { "month": "Mar '25", "balance": 38200 },
+      { "month": "Apr '25", "balance": 39050 },
+      { "month": "May '25", "balance": 39800 },
+      { "month": "Jun '25", "balance": 40400 },
+      { "month": "Jul '25", "balance": 41100 },
+      { "month": "Aug '25", "balance": 41700 },
+      { "month": "Sep '25", "balance": 42300 },
+      { "month": "Oct '25", "balance": 42900 },
+      { "month": "Nov '25", "balance": 43500 },
+      { "month": "Dec '25", "balance": 44050 },
+      { "month": "Jan '26", "balance": 44650 },
+      { "month": "Feb '26", "balance": 45230 }
+    ]
+  },
+  {
+    "id": "cc-001",
+    "type": "Credit Card",
+    "name": "Platinum Rewards",
+    "balance": 2847.60,
+    "accountNumber": "****9154",
+    "creditLimit": 15000,
+    "availableCredit": 12152.40,
+    "minimumPayment": 85.00,
+    "dueDate": "2026-03-05",
+    "currency": "USD",
+    "balanceHistory": [
+      { "month": "Mar '25", "balance": 1200 },
+      { "month": "Apr '25", "balance": 1850 },
+      { "month": "May '25", "balance": 2300 },
+      { "month": "Jun '25", "balance": 1600 },
+      { "month": "Jul '25", "balance": 2100 },
+      { "month": "Aug '25", "balance": 2800 },
+      { "month": "Sep '25", "balance": 1900 },
+      { "month": "Oct '25", "balance": 2400 },
+      { "month": "Nov '25", "balance": 3200 },
+      { "month": "Dec '25", "balance": 4100 },
+      { "month": "Jan '26", "balance": 3500 },
+      { "month": "Feb '26", "balance": 2848 }
+    ]
+  }
+]

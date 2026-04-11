@@ -1,0 +1,218 @@
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Box, IconButton, Typography, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import * as faceapi from 'face-api.js';
+import { useMood } from '../../context/MoodContext';
+
+const MOOD_EMOJI = {
+  happy: '😊',
+  sad: '😢',
+  angry: '😠',
+  stressed: '😰',
+  neutral: '😐',
+};
+
+const MOOD_BORDER_COLOR = {
+  happy: '#FF6B35',
+  sad: '#4A5568',
+  angry: '#E53E3E',
+  stressed: '#5B8C9D',
+  neutral: '#00897B',
+};
+
+function mapExpressions(expressions) {
+  const stressScore = (expressions.fearful + expressions.disgusted) / 2;
+
+  if (expressions.angry > 0.4) return { mood: 'angry', confidence: expressions.angry };
+  if (stressScore > 0.4) return { mood: 'stressed', confidence: stressScore };
+  if (expressions.sad > 0.4) return { mood: 'sad', confidence: expressions.sad };
+
+  const candidates = [
+    { mood: 'happy', score: expressions.happy },
+    { mood: 'neutral', score: expressions.neutral },
+  ];
+  const dominant = candidates.reduce((a, b) => (b.score > a.score ? b : a));
+  return { mood: dominant.mood, confidence: dominant.score };
+}
+
+export default function WebcamMood() {
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const intervalRef = useRef(null);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
+  const { currentMood, isWebcamActive, faceDetected, updateMood, setNoFace, setWebcamActive } = useMood();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const videoWidth = isMobile ? 80 : 120;
+  const videoHeight = isMobile ? 60 : 90;
+
+  useEffect(() => {
+    async function loadModels() {
+      try {
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+          faceapi.nets.faceExpressionNet.loadFromUri('/models'),
+        ]);
+        setModelsLoaded(true);
+      } catch (e) {
+        console.error('Failed to load face-api models:', e);
+        setCameraError('Models failed to load');
+      }
+    }
+    loadModels();
+  }, []);
+
+  const startDetection = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    // Use a longer interval on mobile — Safari/iPhone WebGL is slower
+    const interval = isMobile ? 1500 : 1000;
+
+    intervalRef.current = setInterval(async () => {
+      const video = videoRef.current;
+      if (!video) return;
+      // Wait until video has enough data (readyState 3 = HAVE_FUTURE_DATA, 4 = HAVE_ENOUGH_DATA)
+      if (video.readyState < 3) return;
+      if (video.paused || video.ended) return;
+
+      try {
+        const detection = await faceapi
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 }))
+          .withFaceExpressions();
+
+        if (detection) {
+          const { mood, confidence } = mapExpressions(detection.expressions);
+          updateMood(mood, confidence);
+        } else {
+          setNoFace();
+        }
+      } catch (e) {
+        console.warn('Face detection error:', e);
+      }
+    }, interval);
+  }, [updateMood, setNoFace, isMobile]);
+
+  const startWebcam = useCallback(async () => {
+    try {
+      setCameraError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 320, height: 240, facingMode: 'user' },
+      });
+      streamRef.current = stream;
+      setWebcamActive(true);
+    } catch (e) {
+      console.error('Camera error:', e);
+      setCameraError('Camera access denied');
+      setWebcamActive(false);
+    }
+  }, [setWebcamActive]);
+
+  const stopWebcam = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) videoRef.current.srcObject = null;
+    setWebcamActive(false);
+  }, [setWebcamActive]);
+
+  // Attach stream to video element, then wait for video to be ready before detecting
+  useEffect(() => {
+    if (!isWebcamActive || !videoRef.current || !streamRef.current) return;
+
+    const video = videoRef.current;
+    video.srcObject = streamRef.current;
+
+    // Wait for Safari to confirm video is actually playing before running detection
+    const onReady = () => startDetection();
+    video.addEventListener('loadeddata', onReady, { once: true });
+
+    // Fallback: start anyway after 3s in case the event already fired
+    const fallback = setTimeout(startDetection, 3000);
+
+    return () => {
+      video.removeEventListener('loadeddata', onReady);
+      clearTimeout(fallback);
+    };
+  }, [isWebcamActive, startDetection]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  const toggleWebcam = () => {
+    if (isWebcamActive) stopWebcam();
+    else startWebcam();
+  };
+
+  const borderColor = MOOD_BORDER_COLOR[currentMood] || MOOD_BORDER_COLOR.neutral;
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      {isWebcamActive && (
+        <Box sx={{ position: 'relative' }}>
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            style={{
+              width: videoWidth,
+              height: videoHeight,
+              objectFit: 'cover',
+              borderRadius: 8,
+              border: `3px solid ${borderColor}`,
+              transform: 'scaleX(-1)',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: -4,
+              right: -4,
+              fontSize: 18,
+              bgcolor: 'background.paper',
+              borderRadius: '50%',
+              width: 28,
+              height: 28,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: 1,
+            }}
+          >
+            {faceDetected ? MOOD_EMOJI[currentMood] : '👤'}
+          </Box>
+        </Box>
+      )}
+
+      {cameraError && (
+        <Typography variant="caption" color="error" sx={{ maxWidth: 100 }}>
+          {cameraError}
+        </Typography>
+      )}
+
+      <Tooltip title={isWebcamActive ? 'Turn off camera' : modelsLoaded ? 'Turn on camera' : 'Loading models...'}>
+        <span>
+          <IconButton
+            onClick={toggleWebcam}
+            disabled={!modelsLoaded}
+            size="small"
+            sx={{ color: isWebcamActive ? 'secondary.main' : 'text.secondary' }}
+          >
+            {isWebcamActive ? <VideocamIcon /> : <VideocamOffIcon />}
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
+  );
+}

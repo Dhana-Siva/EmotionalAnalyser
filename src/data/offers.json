@@ -1,0 +1,101 @@
+[
+  {
+    "id": "offer-001",
+    "title": "Morning Coffee Cashback",
+    "description": "Get 10% cashback on coffee purchases before 11 AM",
+    "category": "dining",
+    "timeOfDay": ["morning"],
+    "expiresAt": "2026-03-31",
+    "ctaText": "Activate Offer"
+  },
+  {
+    "id": "offer-002",
+    "title": "Early Bird Investment Tip",
+    "description": "Start your day with smart investing — open a Roth IRA with 0 fees this month",
+    "category": "investing",
+    "timeOfDay": ["morning"],
+    "expiresAt": "2026-04-15",
+    "ctaText": "Learn More"
+  },
+  {
+    "id": "offer-003",
+    "title": "Lunch Deal: 15% Off",
+    "description": "Save 15% at partner restaurants between 11 AM and 2 PM",
+    "category": "dining",
+    "timeOfDay": ["afternoon"],
+    "expiresAt": "2026-03-15",
+    "ctaText": "Activate Offer"
+  },
+  {
+    "id": "offer-004",
+    "title": "Travel Points Bonus",
+    "description": "Earn 3x points on all travel purchases this afternoon",
+    "category": "travel",
+    "timeOfDay": ["afternoon"],
+    "expiresAt": "2026-04-01",
+    "ctaText": "Activate Offer"
+  },
+  {
+    "id": "offer-005",
+    "title": "Evening Entertainment Cashback",
+    "description": "5% cashback on streaming services, movies, and concerts",
+    "category": "entertainment",
+    "timeOfDay": ["evening"],
+    "expiresAt": "2026-03-31",
+    "ctaText": "Activate Offer"
+  },
+  {
+    "id": "offer-006",
+    "title": "Dinner Rewards",
+    "description": "Earn double points on dinner purchases after 5 PM",
+    "category": "dining",
+    "timeOfDay": ["evening"],
+    "expiresAt": "2026-04-30",
+    "ctaText": "Activate Offer"
+  },
+  {
+    "id": "offer-007",
+    "title": "Tomorrow's Market Insights",
+    "description": "Get personalized stock insights delivered to your inbox at 7 AM",
+    "category": "investing",
+    "timeOfDay": ["night"],
+    "expiresAt": "2026-12-31",
+    "ctaText": "Subscribe"
+  },
+  {
+    "id": "offer-008",
+    "title": "Auto-Save Roundup",
+    "description": "Round up every purchase and save the change — starts tonight",
+    "category": "savings",
+    "timeOfDay": ["night"],
+    "expiresAt": "2026-06-30",
+    "ctaText": "Enable Now"
+  },
+  {
+    "id": "offer-009",
+    "title": "Weekend Getaway Deal",
+    "description": "Book with your NovaBank card for 20% off select hotels",
+    "category": "travel",
+    "timeOfDay": ["morning", "afternoon"],
+    "expiresAt": "2026-05-01",
+    "ctaText": "Book Now"
+  },
+  {
+    "id": "offer-010",
+    "title": "Grocery Cashback Boost",
+    "description": "3% cashback on groceries all day — no minimum spend",
+    "category": "shopping",
+    "timeOfDay": ["morning", "afternoon", "evening"],
+    "expiresAt": "2026-03-31",
+    "ctaText": "Activate Offer"
+  },
+  {
+    "id": "offer-011",
+    "title": "Fitness & Wellness Reward",
+    "description": "Earn $5 credit for every gym or wellness purchase this week",
+    "category": "health",
+    "timeOfDay": ["morning", "evening"],
+    "expiresAt": "2026-04-01",
+    "ctaText": "Activate Offer"
+  }
+]
