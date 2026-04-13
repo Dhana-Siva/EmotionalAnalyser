@@ -30,18 +30,19 @@ function mapExpressions(expressions) {
   // Scared/worried faces instead show up as: surprised (wide eyes, raised brows)
   // combined with low happiness and some angry/disgusted tension.
   // We build a composite fearScore to catch this.
+  // surprised is the real signal for scared/worried faces in face-api
   const fearScore = Math.max(
-    fearful,                                    // direct fearful (rare but catch it)
-    surprised * 0.8,                            // surprised = wide-eyed = scared
-    (surprised + angry) / 2,                    // scared + tense combo
-    (surprised + disgusted) / 2,               // wide-eyed + uneasy combo
+    fearful,                       // direct fearful (rare)
+    surprised,                     // wide eyes = scared — full weight
+    (surprised + angry)   / 2,     // scared + tense combo
+    (surprised + disgusted) / 2,   // wide-eyed + uneasy combo
   );
 
-  // Stressed: moderate tension without the wide-eyed scared look
+  // Stressed: tension without the wide-eyed look
   const stressScore = Math.max(disgusted, (disgusted + angry * 0.5) / 1.5);
 
-  // Fearful FIRST — safety-critical, catches wide-eyed scared expressions
-  if (fearScore  > 0.18) return { mood: 'fearful', confidence: fearScore };
+  // Fearful FIRST — safety-critical
+  if (fearScore  > 0.15) return { mood: 'fearful', confidence: fearScore };
   if (angry      > 0.35) return { mood: 'angry',   confidence: angry };
   if (stressScore > 0.20) return { mood: 'stressed', confidence: stressScore };
   if (sad        > 0.25) return { mood: 'sad',      confidence: sad };
