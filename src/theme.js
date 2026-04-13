@@ -26,6 +26,11 @@ const moodPalettes = {
     secondary: { main: '#ED8936', light: '#F6AD55', dark: '#DD6B20' },
     background: { default: '#F7FAFC', paper: '#FFFFFF' },
   },
+  fearful: {
+    primary: { main: '#991B1B', light: '#DC2626', dark: '#7F1D1D' },
+    secondary: { main: '#F87171', light: '#FCA5A5', dark: '#EF4444' },
+    background: { default: '#FFF5F5', paper: '#FFFFFF' },
+  },
 };
 
 export function createMoodTheme(mood = 'neutral') {

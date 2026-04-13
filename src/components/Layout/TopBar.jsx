@@ -14,6 +14,7 @@ const MOOD_GREETINGS = {
   sad:      "Need anything? We're here for you.",
   angry:    "We're ready to help. Let us know.",
   stressed: "Take it easy — everything's under control.",
+  fearful:  "Are you okay? Help is just a tap away. 😨",
   neutral:  "Welcome back, Dhana",
 };
 
@@ -22,6 +23,7 @@ const MOOD_CHIP_COLORS = {
   sad:      '#4A5568',
   angry:    '#E53E3E',
   stressed: '#5B8C9D',
+  fearful:  '#DC2626',
   neutral:  '#00897B',
 };
 

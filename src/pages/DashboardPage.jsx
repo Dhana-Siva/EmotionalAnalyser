@@ -7,6 +7,7 @@ import OffersCarousel from '../components/Dashboard/OffersCarousel';
 import EncouragementCard from '../components/Dashboard/EncouragementCard';
 import SupportCard from '../components/Dashboard/SupportCard';
 import QuickHelpCard from '../components/Dashboard/QuickHelpCard';
+import FearCard from '../components/Dashboard/FearCard';
 import { useMood } from '../context/MoodContext';
 import transactions from '../data/transactions.json';
 
@@ -19,10 +20,10 @@ const formatCurrency = (amount) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 
 function MoodCard({ mood }) {
-  if (mood === 'angry') return <QuickHelpCard />;
+  if (mood === 'fearful')  return <FearCard />;
+  if (mood === 'angry')    return <QuickHelpCard />;
   if (mood === 'stressed') return <SupportCard />;
-  if (mood === 'sad') return <EncouragementCard />;
-  // Show offers for happy, neutral, and any other non-negative mood
+  if (mood === 'sad')      return <EncouragementCard />;
   return <OffersCarousel />;
 }
 

@@ -2,7 +2,7 @@ import { createContext, useContext, useReducer, useCallback, useRef } from 'reac
 
 const MoodContext = createContext(null);
 
-const NEGATIVE_MOODS = ['angry', 'stressed', 'sad'];
+const NEGATIVE_MOODS = ['angry', 'stressed', 'sad', 'fearful'];
 
 function getTimeOfDay() {
   const hour = new Date().getHours();

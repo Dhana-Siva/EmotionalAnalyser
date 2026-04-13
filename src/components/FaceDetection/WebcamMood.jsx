@@ -6,18 +6,20 @@ import * as faceapi from 'face-api.js';
 import { useMood } from '../../context/MoodContext';
 
 const MOOD_EMOJI = {
-  happy: '😊',
-  sad: '😢',
-  angry: '😠',
-  stressed: '😰',
+  happy:   '😊',
+  sad:     '😢',
+  angry:   '😠',
+  stressed:'😰',
+  fearful: '😨',
   neutral: '😐',
 };
 
 const MOOD_BORDER_COLOR = {
-  happy: '#FF6B35',
-  sad: '#4A5568',
-  angry: '#E53E3E',
-  stressed: '#5B8C9D',
+  happy:   '#FF6B35',
+  sad:     '#4A5568',
+  angry:   '#E53E3E',
+  stressed:'#5B8C9D',
+  fearful: '#DC2626',
   neutral: '#00897B',
 };
 
@@ -30,8 +32,8 @@ function mapExpressions(expressions) {
 
   // Lower thresholds so real expressions register
   if (angry    > 0.25) return { mood: 'angry',   confidence: angry };
+  if (fearful  > 0.12) return { mood: 'fearful', confidence: fearful }; // fearful = call for help
   if (stressScore > 0.15) return { mood: 'stressed', confidence: stressScore };
-  if (fearful  > 0.12) return { mood: 'stressed', confidence: fearful }; // catch subtle fear
   if (sad      > 0.25) return { mood: 'sad',      confidence: sad };
 
   const candidates = [
