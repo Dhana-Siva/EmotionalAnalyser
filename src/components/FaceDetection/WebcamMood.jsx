@@ -51,6 +51,7 @@ export default function WebcamMood() {
   const intervalRef = useRef(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [cameraError, setCameraError] = useState(null);
+  const [debugScores, setDebugScores] = useState(null);
   const { currentMood, isWebcamActive, faceDetected, updateMood, setNoFace, setWebcamActive } = useMood();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -92,10 +93,19 @@ export default function WebcamMood() {
           .withFaceExpressions();
 
         if (detection) {
-          const { mood, confidence } = mapExpressions(detection.expressions);
+          const e = detection.expressions;
+          setDebugScores({
+            angry:   (e.angry   * 100).toFixed(0),
+            fearful: (e.fearful * 100).toFixed(0),
+            sad:     (e.sad     * 100).toFixed(0),
+            happy:   (e.happy   * 100).toFixed(0),
+            neutral: (e.neutral * 100).toFixed(0),
+          });
+          const { mood, confidence } = mapExpressions(e);
           updateMood(mood, confidence);
         } else {
           setNoFace();
+          setDebugScores(null);
         }
       } catch (e) {
         console.warn('Face detection error:', e);
@@ -167,6 +177,21 @@ export default function WebcamMood() {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      {isWebcamActive && debugScores && (
+        <Box sx={{
+          fontSize: 10, lineHeight: 1.4, bgcolor: 'rgba(0,0,0,0.75)',
+          color: '#fff', borderRadius: 1, px: 0.8, py: 0.5,
+          fontFamily: 'monospace', minWidth: 80,
+        }}>
+          {Object.entries(debugScores).map(([k, v]) => (
+            <Box key={k} sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
+              <span style={{ color: k === 'fearful' ? '#f87171' : k === 'angry' ? '#fbbf24' : '#aaa' }}>{k}</span>
+              <span>{v}%</span>
+            </Box>
+          ))}
+        </Box>
+      )}
+
       {isWebcamActive && (
         <Box sx={{ position: 'relative' }}>
           <video
