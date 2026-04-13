@@ -30,9 +30,10 @@ function mapExpressions(expressions) {
   // Check fearful independently — don't average it away
   const stressScore = Math.max(fearful, disgusted, (fearful + disgusted) / 2);
 
-  // Lower thresholds so real expressions register
+  // Fearful is checked FIRST — it's safety-critical and must not be masked by angry
+  // face-api often assigns high angry scores when someone looks scared/tense
+  if (fearful  > 0.12) return { mood: 'fearful', confidence: fearful };
   if (angry    > 0.25) return { mood: 'angry',   confidence: angry };
-  if (fearful  > 0.12) return { mood: 'fearful', confidence: fearful }; // fearful = call for help
   if (stressScore > 0.15) return { mood: 'stressed', confidence: stressScore };
   if (sad      > 0.25) return { mood: 'sad',      confidence: sad };
 
