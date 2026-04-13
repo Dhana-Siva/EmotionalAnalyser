@@ -26,16 +26,25 @@ const MOOD_BORDER_COLOR = {
 function mapExpressions(expressions) {
   const { angry, fearful, disgusted, sad, happy, neutral, surprised } = expressions;
 
-  // Stressed = fearful OR disgusted OR surprised (wide eyes, raised brows)
-  // Check fearful independently — don't average it away
-  const stressScore = Math.max(fearful, disgusted, (fearful + disgusted) / 2);
+  // face-api rarely scores 'fearful' > 0 for real people.
+  // Scared/worried faces instead show up as: surprised (wide eyes, raised brows)
+  // combined with low happiness and some angry/disgusted tension.
+  // We build a composite fearScore to catch this.
+  const fearScore = Math.max(
+    fearful,                                    // direct fearful (rare but catch it)
+    surprised * 0.8,                            // surprised = wide-eyed = scared
+    (surprised + angry) / 2,                    // scared + tense combo
+    (surprised + disgusted) / 2,               // wide-eyed + uneasy combo
+  );
 
-  // Fearful is checked FIRST — it's safety-critical and must not be masked by angry
-  // face-api often assigns high angry scores when someone looks scared/tense
-  if (fearful  > 0.07) return { mood: 'fearful', confidence: fearful };
-  if (angry    > 0.25) return { mood: 'angry',   confidence: angry };
-  if (stressScore > 0.15) return { mood: 'stressed', confidence: stressScore };
-  if (sad      > 0.25) return { mood: 'sad',      confidence: sad };
+  // Stressed: moderate tension without the wide-eyed scared look
+  const stressScore = Math.max(disgusted, (disgusted + angry * 0.5) / 1.5);
+
+  // Fearful FIRST — safety-critical, catches wide-eyed scared expressions
+  if (fearScore  > 0.18) return { mood: 'fearful', confidence: fearScore };
+  if (angry      > 0.35) return { mood: 'angry',   confidence: angry };
+  if (stressScore > 0.20) return { mood: 'stressed', confidence: stressScore };
+  if (sad        > 0.25) return { mood: 'sad',      confidence: sad };
 
   const candidates = [
     { mood: 'happy',   score: happy },
@@ -95,11 +104,13 @@ export default function WebcamMood() {
         if (detection) {
           const e = detection.expressions;
           setDebugScores({
-            angry:   (e.angry   * 100).toFixed(0),
-            fearful: (e.fearful * 100).toFixed(0),
-            sad:     (e.sad     * 100).toFixed(0),
-            happy:   (e.happy   * 100).toFixed(0),
-            neutral: (e.neutral * 100).toFixed(0),
+            angry:     (e.angry     * 100).toFixed(0),
+            fearful:   (e.fearful   * 100).toFixed(0),
+            surprised: (e.surprised * 100).toFixed(0),
+            disgusted: (e.disgusted * 100).toFixed(0),
+            sad:       (e.sad       * 100).toFixed(0),
+            happy:     (e.happy     * 100).toFixed(0),
+            neutral:   (e.neutral   * 100).toFixed(0),
           });
           const { mood, confidence } = mapExpressions(e);
           updateMood(mood, confidence);
@@ -185,7 +196,7 @@ export default function WebcamMood() {
         }}>
           {Object.entries(debugScores).map(([k, v]) => (
             <Box key={k} sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
-              <span style={{ color: k === 'fearful' ? '#f87171' : k === 'angry' ? '#fbbf24' : '#aaa' }}>{k}</span>
+              <span style={{ color: k === 'fearful' ? '#f87171' : k === 'surprised' ? '#f87171' : k === 'angry' ? '#fbbf24' : '#aaa' }}>{k}</span>
               <span>{v}%</span>
             </Box>
           ))}
