@@ -22,15 +22,21 @@ const MOOD_BORDER_COLOR = {
 };
 
 function mapExpressions(expressions) {
-  const stressScore = (expressions.fearful + expressions.disgusted) / 2;
+  const { angry, fearful, disgusted, sad, happy, neutral, surprised } = expressions;
 
-  if (expressions.angry > 0.4) return { mood: 'angry', confidence: expressions.angry };
-  if (stressScore > 0.4) return { mood: 'stressed', confidence: stressScore };
-  if (expressions.sad > 0.4) return { mood: 'sad', confidence: expressions.sad };
+  // Stressed = fearful OR disgusted OR surprised (wide eyes, raised brows)
+  // Check fearful independently — don't average it away
+  const stressScore = Math.max(fearful, disgusted, (fearful + disgusted) / 2);
+
+  // Lower thresholds so real expressions register
+  if (angry    > 0.25) return { mood: 'angry',   confidence: angry };
+  if (stressScore > 0.15) return { mood: 'stressed', confidence: stressScore };
+  if (fearful  > 0.12) return { mood: 'stressed', confidence: fearful }; // catch subtle fear
+  if (sad      > 0.25) return { mood: 'sad',      confidence: sad };
 
   const candidates = [
-    { mood: 'happy', score: expressions.happy },
-    { mood: 'neutral', score: expressions.neutral },
+    { mood: 'happy',   score: happy },
+    { mood: 'neutral', score: neutral },
   ];
   const dominant = candidates.reduce((a, b) => (b.score > a.score ? b : a));
   return { mood: dominant.mood, confidence: dominant.score };
@@ -68,7 +74,7 @@ export default function WebcamMood() {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
     // Use a longer interval on mobile — Safari/iPhone WebGL is slower
-    const interval = isMobile ? 1500 : 1000;
+    const interval = isMobile ? 1200 : 600;
 
     intervalRef.current = setInterval(async () => {
       const video = videoRef.current;

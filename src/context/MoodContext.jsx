@@ -47,9 +47,9 @@ function moodReducer(state, action) {
   }
 }
 
-const CONFIDENCE_THRESHOLD = 0.3;
-const NEGATIVE_CONFIDENCE_THRESHOLD = 0.3; // match positive threshold — avoid false triggers
-const DEBOUNCE_MS = 1500; // wait 1.5s of sustained expression before switching mood
+const CONFIDENCE_THRESHOLD = 0.25;
+const NEGATIVE_CONFIDENCE_THRESHOLD = 0.15; // very sensitive for negative moods
+const DEBOUNCE_MS = 500; // react within half a second
 
 export function MoodProvider({ children }) {
   const [state, dispatch] = useReducer(moodReducer, initialState);
